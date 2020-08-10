@@ -1,0 +1,37 @@
+version: '3'
+services:
+    client:
+        build: ./client
+        working_dir: /usr/src/app
+        restart: always
+        tty: true
+        environment:
+            - NODE_ENV=production
+        volumes:
+            - ./:/usr/src/app
+        command: sh -c "npm start"
+        ports:
+            - "3000:3000"
+        
+    api:
+        build: ./api
+        restart: always
+        tty: true
+        environment:
+            - NODE_ENV=production
+        volumes:
+            - ./server/src:/app/server/src
+        command: sh -c "npm run dev"
+        ports:
+            - "4000:4000"
+        depends_on: 
+            - mongodb
+            - client
+  
+    mongodb:
+        image: "mongo"
+        ports: 
+            - "27017:27017"
+        restart: always
+        volumes: 
+            - ./api/data:/data/db
